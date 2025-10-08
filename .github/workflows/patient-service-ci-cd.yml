@@ -2,7 +2,9 @@ name: Patient Service CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - 'feature/**'
 
 jobs:
   build:
