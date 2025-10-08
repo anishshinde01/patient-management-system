@@ -1,0 +1,4 @@
+### get all patients
+GET http://localhost:8080/patients
+
+###

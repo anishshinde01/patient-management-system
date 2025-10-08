@@ -3,11 +3,13 @@ package com.anishshinde.patientservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Getter
 public class Patient {
 
     @Id
