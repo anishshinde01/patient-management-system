@@ -3,13 +3,16 @@ package com.anishshinde.patientservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
 public class Patient {
 
     @Id
@@ -27,10 +30,10 @@ public class Patient {
     @NotBlank
     private String address;
 
-    @NotBlank
+    @NotNull
     private LocalDate dateOfBirth;
 
-    @NotBlank
+    @NotNull
     private LocalDate registrationDate;
 }
 

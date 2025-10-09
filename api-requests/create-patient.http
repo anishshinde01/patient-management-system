@@ -1,0 +1,13 @@
+### create a new patient enitity
+POST http://localhost:8080/patients
+Content-Type: application/json
+
+{
+  "name": "test create",
+  "email": "test_create@example.com",
+  "address": "123 test address, test City",
+  "dateOfBirth": "2000-12-10",
+  "registrationDate": "2020-06-11"
+}
+
+###
