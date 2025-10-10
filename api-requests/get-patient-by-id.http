@@ -1,4 +1,4 @@
 ### get patient by ID
-GET http://localhost:8080/patients/123e4567-e89b-12d3-a456-426614174000
+GET http://localhost:4000/patients/123e4567-e89b-12d3-a456-426614174001
 
 ###

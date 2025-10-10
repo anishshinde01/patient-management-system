@@ -1,5 +1,5 @@
 ### create a new patient enitity
-POST http://localhost:8080/patients
+POST http://localhost:4000/patients
 Content-Type: application/json
 
 {
