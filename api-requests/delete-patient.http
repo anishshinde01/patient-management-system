@@ -1,5 +1,5 @@
 ### delete patient entity from DB
 
-DELETE http://localhost:4000/patients/123e4567-e89b-12d3-a456-426614174000
+DELETE http://localhost:4000/patients/d2819e43-d5d0-4df8-97a5-8c2a9c9d93b7
 
 ###

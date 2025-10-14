@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://patient-service-db:5432/db
+    username: admin_user
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
