@@ -24,8 +24,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Run tests with H2 profile
+        run: mvn -B clean test -f patient-service/pom.xml -Dspring.profiles.active=test
+ 
       - name: Build with Maven
-        run: mvn -B clean package -f patient-service/pom.xml -DSkipTests
+        run: mvn -B clean package -f patient-service/pom.xml -DskipTests
 
       - name: Build patient-service
         run: docker build -t patient-service ./patient-service

@@ -1,0 +1,46 @@
+services:
+  patient-service-db:
+    image: postgres:15
+    container_name: patient-service-db
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5001:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin_user -d db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  patient-service:
+    build:
+      context: ./patient-service
+      dockerfile: Dockerfile
+    container_name: patient-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/db
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "4000:4000"
+    depends_on:
+      patient-service-db:
+        condition: service_healthy
+    networks:
+      - patient-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  patient-network:
+    driver: bridge
