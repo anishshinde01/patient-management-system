@@ -4,6 +4,7 @@ import com.anishshinde.patientservice.dto.PatientRequestDto;
 import com.anishshinde.patientservice.dto.PatientResponseDto;
 import com.anishshinde.patientservice.exception.EmailAlreadyExistsException;
 import com.anishshinde.patientservice.exception.PatientNotFoundException;
+import com.anishshinde.patientservice.grpc.BillingServiceGrpcClient;
 import com.anishshinde.patientservice.mapper.PatientMapper;
 import com.anishshinde.patientservice.model.Patient;
 import com.anishshinde.patientservice.repository.PatientRepository;
@@ -15,10 +16,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor // generates constructor for all required (final/@NonNull) fields
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingServiceGrpcClient;
 
     public List<PatientResponseDto> getPatients(){
         List<Patient> patients = patientRepository.findAll();
@@ -39,8 +41,12 @@ public class PatientService {
             throw new EmailAlreadyExistsException(patientRequestDto.getEmail());
         }
 
-        Patient patient = patientRepository.save(PatientMapper.toModel(patientRequestDto));
-        return PatientMapper.toDto(patient);
+        Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDto));
+
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
+                newPatient.getName(), newPatient.getEmail());
+
+        return PatientMapper.toDto(newPatient);
     }
 
     public PatientResponseDto updatePatient(UUID id, PatientRequestDto patientRequestDto) {

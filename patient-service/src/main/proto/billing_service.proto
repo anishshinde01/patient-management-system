@@ -1,0 +1,24 @@
+// patient-service: gRPC client responsible for calling the Billing Service.
+// billing-service: gRPC server responsible for handling RPC requests from clients.
+
+syntax = 'proto3';
+
+option java_multiple_files = true; // splits service, request and response all into different files
+option java_package= "billing"; // places all generated Java files under the 'billing' package created after compilation
+
+service BillingService{
+  rpc CreateBillingAccount (BillingRequest) returns (BillingResponse);
+}
+
+message BillingRequest {
+//  <type> <fieldName> = <fieldNumber>; fieldNumber has to be unique
+// internally protobuf stores/transmits data like: (field_number, value)
+  string patientId = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message BillingResponse {
+  string accountId = 1;
+  string status = 2;
+}
