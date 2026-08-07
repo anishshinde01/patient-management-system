@@ -1,67 +1,58 @@
 # 🏥 Patient Management System
-A microservice-based **REST API** built with **Spring Boot** (Java 21) for managing patient records.
-The system supports containerized deployment using **Docker**, continuous integration with **GitHub Actions**, and interactive API testing via Swagger UI.
+
+A microservice-based Patient Management System built with **Spring Boot** and **Java 21**. The project demonstrates modern backend development using REST APIs, gRPC, Apache Kafka, Docker, and GitHub Actions.
 
 ---
 
-## 🛠 Technology Stack
+## Technology Stack
 
-| Category | Technologies |
-|-----------|--------------|
-| **Backend** | Java 21, Spring Boot, Spring Data JPA |
-| **Database** | PostgreSQL (Primary), H2 (Testing) |
-| **Validation** | Spring Validation |
-| **Code Simplification** | Lombok |
-| **API Documentation** | Swagger / OpenAPI 3 |
-| **Build Tool** | Maven |
-| **Containerization** | Docker & Docker Compose |
-| **CI/CD** | GitHub Actions |
-
+| Category             | Technologies                               |
+| -------------------- | ------------------------------------------ |
+| **Backend**          | Java 21, Spring Boot, Spring Data JPA      |
+| **Communication**    | REST, gRPC, Apache Kafka, Protocol Buffers |
+| **Database**         | PostgreSQL, H2 (Testing)                   |
+| **Documentation**    | Swagger / OpenAPI 3                        |
+| **Build Tool**       | Maven                                      |
+| **Containerization** | Docker, Docker Compose                     |
+| **CI/CD**            | GitHub Actions                             |
 
 ---
-<img width="1437" height="689" alt="Bildschirmfoto 2025-10-10 um 14 43 43" src="https://github.com/user-attachments/assets/7013b312-23f0-4702-bcf4-2149b3bdfc4a" />
 
-## 🚀 Quick Start with Docker Compose
-
-Run the entire application stack with a single command!
+## Quick Start
 
 ### Prerequisites
-- Docker Desktop installed and running
-- Git (to clone the repository)
 
-### Running the Application
+* Docker Desktop
+* Git
 
-1. **Clone the repository:**
+### Run the application
+
 ```bash
 git clone https://github.com/anishshinde01/patient-management-system.git
 cd patient-management-system
+docker compose up --build
 ```
 
-2. **Start the application stack:**
+This starts the complete application stack, including the microservices, PostgreSQL, Apache Kafka, and Kafka UI.
+
+---
+
+## Access the application
+
+* **API Gateway / REST API:** http://localhost:4000
+* **Swagger UI:** http://localhost:4000/swagger-ui.html
+* **Kafka UI:** http://localhost:8080
+
+---
+
+## Stop the application
+
 ```bash
-docker-compose up --build
+docker compose down
 ```
 
-This will:
-- ✅ Build the Spring Boot application
-- ✅ Start a PostgreSQL database
-- ✅ Connect the application to the database
-- ✅ Make the API available at http://localhost:4000
-
-## 🌐 Accessing the Application
-
-### Swagger UI (Recommended)
-- Visit: [http://localhost:4000/swagger-ui.html](http://localhost:4000/swagger-ui.html)
-- Interactive testing interface with request/response examples.
-
-## 🛑 Stopping the Application
+To also remove persistent Docker volumes:
 
 ```bash
-# Stop services
-docker-compose down
-```
-or
-```bash
-# Stop services and remove database volume
-docker-compose down -v
+docker compose down -v
 ```
