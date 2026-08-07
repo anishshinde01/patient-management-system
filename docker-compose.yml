@@ -1,4 +1,4 @@
-services:
+ services:
   patient-service-db:
     image: postgres:15
     container_name: patient-service-db
@@ -34,6 +34,18 @@ services:
     depends_on:
       patient-service-db:
         condition: service_healthy
+    networks:
+      - patient-network
+    restart: unless-stopped
+
+  billing-service:
+    build:
+      context: ./billing-service
+      dockerfile: Dockerfile
+    container_name: billing-service
+    ports:
+      - "4001:4001"   # REST
+      - "9001:9001"   # gRPC
     networks:
       - patient-network
     restart: unless-stopped

@@ -26,12 +26,18 @@ jobs:
 
       - name: Run tests with H2 profile
         run: mvn -B clean test -f patient-service/pom.xml -Dspring.profiles.active=test
- 
-      - name: Build with Maven
+
+      - name: Build patient-service with Maven
         run: mvn -B clean package -f patient-service/pom.xml -DskipTests
+
+      - name: Build billing-service with Maven
+        run: mvn -B clean package -f billing-service/pom.xml -DskipTests
 
       - name: Build patient-service
         run: docker build -t patient-service ./patient-service
+
+      - name: Build billing-service
+        run: docker build -t billing-service ./billing-service
 
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
@@ -46,3 +52,9 @@ jobs:
         run: |
           docker tag patient-service ghcr.io/${{ github.repository }}/patient-service:latest
           docker push ghcr.io/${{ github.repository }}/patient-service:latest
+          
+      - name: Push billing-service
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag billing-service ghcr.io/${{ github.repository }}/billing-service:latest
+          docker push ghcr.io/${{ github.repository }}/billing-service:latest
