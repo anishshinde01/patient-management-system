@@ -6,18 +6,17 @@ WORKDIR /app
 COPY proto ./proto
 RUN mvn -f proto/pom.xml clean install -DskipTests
 
-# Copy and build billing service
-COPY billing-service ./billing-service
-RUN mvn -f billing-service/pom.xml clean package -DskipTests
+# Copy and build analytics service
+COPY analytics-service ./analytics-service
+RUN mvn -f analytics-service/pom.xml clean package -DskipTests
 
 # Runtime image
 FROM eclipse-temurin:21-jdk AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/billing-service/target/billing-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/analytics-service/target/analytics-service-0.0.1-SNAPSHOT.jar ./app.jar
 
-EXPOSE 4001
-EXPOSE 9001
+EXPOSE 4002
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

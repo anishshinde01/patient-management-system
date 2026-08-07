@@ -2,19 +2,20 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
+# Copy and build shared proto module first
+COPY proto ./proto
+RUN mvn -f proto/pom.xml clean install -DskipTests
 
-RUN mvn dependency:go-offline -B
+# Copy and build patient service
+COPY patient-service ./patient-service
+RUN mvn -f patient-service/pom.xml clean package -DskipTests
 
-COPY src ./src
-
-RUN mvn clean package -DskipTests
-
+# Runtime image
 FROM eclipse-temurin:21-jdk AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder /app/patient-service/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
 
 EXPOSE 4000
 

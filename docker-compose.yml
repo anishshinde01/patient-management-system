@@ -1,4 +1,4 @@
- services:
+services:
   patient-service-db:
     image: postgres:15
     container_name: patient-service-db
@@ -21,18 +21,27 @@
 
   patient-service:
     build:
-      context: ./patient-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: patient-service/Dockerfile
     container_name: patient-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/db
       SPRING_DATASOURCE_USERNAME: admin_user
       SPRING_DATASOURCE_PASSWORD: password
+
+      BILLING_SERVICE_ADDRESS: billing-service
+      BILLING_SERVICE_GRPC_PORT: 9001
+
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "4000:4000"
     depends_on:
       patient-service-db:
+        condition: service_healthy
+      billing-service:
+        condition: service_started
+      kafka:
         condition: service_healthy
     networks:
       - patient-network
@@ -40,8 +49,8 @@
 
   billing-service:
     build:
-      context: ./billing-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: billing-service/Dockerfile
     container_name: billing-service
     ports:
       - "4001:4001"   # REST
@@ -50,8 +59,81 @@
       - patient-network
     restart: unless-stopped
 
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    environment:
+      KAFKA_NODE_ID: 0
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+
+      # Single-broker setup requires a replication factor of 1 for consumer offsets.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # Single-broker setup requires a replication factor of 1 for transaction state.
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      # Allow transactions with a single in-sync replica in local development.
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: 5L6g3nShT-eMCtK--X86sw
+
+    volumes:
+      - kafka_data:/tmp/kraft-combined-logs
+
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    networks:
+      - patient-network
+
+    restart: unless-stopped
+
+  # Kafka UI for inspecting and managing the local Kafka broker during development.
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      # Connection via kafka:9092 for Docker services; external clients would use localhost:9094(127.0.0.1:9094).
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - patient-network
+    restart: unless-stopped
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: analytics-service/Dockerfile
+    container_name: analytics-service
+    ports:
+      - "4002:4002"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - patient-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  kafka_data:
 
 networks:
   patient-network:
