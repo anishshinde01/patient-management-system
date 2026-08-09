@@ -40,6 +40,9 @@ jobs:
       - name: Build analytics-service with Maven
         run: mvn -B clean package -f analytics-service/pom.xml -DskipTests
 
+      - name: Build api-gateway with Maven
+        run: mvn -B clean package -f api-gateway/pom.xml -DskipTests
+
       - name: Build patient-service
         run: docker build -f patient-service/Dockerfile -t patient-service .
 
@@ -48,6 +51,9 @@ jobs:
 
       - name: Build analytics-service
         run: docker build -f analytics-service/Dockerfile -t analytics-service .
+
+      - name: Build api-gateway
+        run: docker build -f api-gateway/Dockerfile -t api-gateway .
 
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
@@ -74,3 +80,9 @@ jobs:
         run: |
           docker tag analytics-service ghcr.io/${{ github.repository }}/analytics-service:latest
           docker push ghcr.io/${{ github.repository }}/analytics-service:latest
+
+      - name: Push api-gateway
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag api-gateway ghcr.io/${{ github.repository }}/api-gateway:latest
+          docker push ghcr.io/${{ github.repository }}/api-gateway:latest

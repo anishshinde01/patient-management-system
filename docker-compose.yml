@@ -20,8 +20,8 @@ services:
       start_period: 10s
 
   patient-service:
-    build:
-      context: .
+    build:  # Build Docker image from Dockerfile
+      context: .  # Use project root as Docker build context
       dockerfile: patient-service/Dockerfile
     container_name: patient-service
     environment:
@@ -34,8 +34,6 @@ services:
       BILLING_SERVICE_GRPC_PORT: 9001
 
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-    ports:
-      - "4000:4000"
     depends_on:
       patient-service-db:
         condition: service_healthy
@@ -53,7 +51,7 @@ services:
       dockerfile: billing-service/Dockerfile
     container_name: billing-service
     ports:
-      - "4001:4001"   # REST
+      - "4001:4001"   # REST  ## Host port 4001 -> Billing Service container port 4001
       - "9001:9001"   # gRPC
     networks:
       - patient-network
@@ -130,6 +128,17 @@ services:
     networks:
       - patient-network
     restart: unless-stopped
+
+  api-gateway:
+      build:
+        context: .
+        dockerfile: api-gateway/Dockerfile
+      container_name: api-gateway
+      ports:
+        - "4004:4004"
+      networks:
+        - patient-network
+      restart: unless-stopped
 
 volumes:
   postgres_data:

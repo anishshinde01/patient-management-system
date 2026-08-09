@@ -1,10 +1,10 @@
 ### update existing patient entity
-PUT http://localhost:4000/patients/223e4567-e89b-12d3-a456-426614174014
+PUT http://localhost:4004/api/patients/5cde276f-f666-45b2-bfd0-05ff9b9ee22a
 Content-Type: application/json
 
 {
   "name": "Test Update",
-  "email": "test_update@example.com",
+  "email": "test_update_2@example.com",
   "address": "123 test ad, test city",
   "dateOfBirth": "1990-09-23"
 }
