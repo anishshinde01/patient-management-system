@@ -55,6 +55,13 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: docker compose up -d --wait
 
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          docker compose ps
+          docker compose logs kafka
+          docker inspect kafka --format='{{json .State.Health}}'
+
       - name: Run integration tests
         run: mvn -B test -f integration-tests/pom.xml
 
