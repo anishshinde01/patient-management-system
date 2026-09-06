@@ -26,6 +26,7 @@ jobs:
 
       # Shared proto module must be installed first because the services depend on it.
       - name: Build proto module
+        # Build app automatically without user input, skip tests
         run: mvn -B clean install -f proto/pom.xml -DskipTests
 
       - name: Run tests with H2 profile
@@ -43,7 +44,11 @@ jobs:
       - name: Build api-gateway with Maven
         run: mvn -B clean package -f api-gateway/pom.xml -DskipTests
 
+      - name: Build auth-service with Maven
+        run: mvn -B clean package -f auth-service/pom.xml -DskipTests
+
       - name: Build patient-service
+        # -f = Dockerfile to use, -t = image name/tag, . = repo root as build context
         run: docker build -f patient-service/Dockerfile -t patient-service .
 
       - name: Build billing-service
@@ -55,16 +60,24 @@ jobs:
       - name: Build api-gateway
         run: docker build -f api-gateway/Dockerfile -t api-gateway .
 
+      - name: Build auth-service
+        run: docker build -f auth-service/Dockerfile -t auth-service .
+
       - name: Login to GitHub Container Registry
+        # Only login when the workflow is running on the main branch
         if: github.ref == 'refs/heads/main'
+        # Use GitHub's existing Docker login action instead of writing the login ourselves
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
+          # ${{ }} accesses values provided by GitHub Actions
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Upload patient-service Docker image to ghcr
       - name: Push patient-service
         if: github.ref == 'refs/heads/main'
+        # Give local image the full location required by ghcr and push tagged image to it
         run: |
           docker tag patient-service ghcr.io/${{ github.repository }}/patient-service:latest
           docker push ghcr.io/${{ github.repository }}/patient-service:latest
@@ -86,3 +99,9 @@ jobs:
         run: |
           docker tag api-gateway ghcr.io/${{ github.repository }}/api-gateway:latest
           docker push ghcr.io/${{ github.repository }}/api-gateway:latest
+
+      - name: Push auth-service
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag auth-service ghcr.io/${{ github.repository }}/auth-service:latest
+          docker push ghcr.io/${{ github.repository }}/auth-service:latest

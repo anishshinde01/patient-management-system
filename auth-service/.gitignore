@@ -1,5 +1,4 @@
 HELP.md
-.DS_Store
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -15,7 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iws
 *.iml
 *.ipr
@@ -32,6 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-# Local environment variables/secrets used by the application; to keep them out of GitHub.
-.env

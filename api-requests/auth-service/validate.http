@@ -1,0 +1,5 @@
+### !! Run the login request first so the returned token is saved as {{token}}. !!
+### GET request to validate token
+GET http://localhost:4004/auth/validate
+# Send the saved token in the Authorization header.
+Authorization: Bearer {{token}}

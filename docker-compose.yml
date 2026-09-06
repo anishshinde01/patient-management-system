@@ -8,16 +8,16 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5001:5432"
-    volumes:
+    volumes:  # Persists PostgreSQL data across container restarts and recreation
       - postgres_data:/var/lib/postgresql/data
     networks:
       - patient-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin_user -d db"]
+    healthcheck: # Checks whether PostgreSQL is ready to accept connections before dependent services start
+      test: ["CMD-SHELL", "pg_isready -U admin_user -d db"] # In CMD-SHELL, check PostgreSQL availability using user admin_user and database db
       interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
+      timeout: 10s      # Allow each check up to 10 seconds
+      retries: 5        # Mark unhealthy after 5 failed checks
+      start_period: 10s # Allow 10 seconds for PostgreSQL to start
 
   patient-service:
     build:  # Build Docker image from Dockerfile
@@ -136,12 +136,54 @@ services:
       container_name: api-gateway
       ports:
         - "4004:4004"
+      environment:
+        AUTH_SERVICE_URL: http://auth-service:4005
       networks:
         - patient-network
       restart: unless-stopped
 
+  auth-service-db:
+    image: postgres:15
+    container_name: auth-service-db
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5002:5432"
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql/data
+    networks:
+      - patient-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin_user -d db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    container_name: auth-service
+    environment:
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/db
+      SPRING_DATASOURCE_USERNAME: admin_user
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      auth-service-db:
+        condition: service_healthy
+    networks:
+      - patient-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  auth_postgres_data:
   kafka_data:
 
 networks:
