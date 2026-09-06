@@ -47,21 +47,20 @@ jobs:
       - name: Build auth-service with Maven
         run: mvn -B clean package -f auth-service/pom.xml -DskipTests
 
-      - name: Build patient-service
-        # -f = Dockerfile to use, -t = image name/tag, . = repo root as build context
-        run: docker build -f patient-service/Dockerfile -t patient-service .
+      - name: Build Docker images
+        run: docker compose build
 
-      - name: Build billing-service
-        run: docker build -f billing-service/Dockerfile -t billing-service .
+      - name: Start services for integration tests
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: docker compose up -d --wait
 
-      - name: Build analytics-service
-        run: docker build -f analytics-service/Dockerfile -t analytics-service .
+      - name: Run integration tests
+        run: mvn -B test -f integration-tests/pom.xml
 
-      - name: Build api-gateway
-        run: docker build -f api-gateway/Dockerfile -t api-gateway .
-
-      - name: Build auth-service
-        run: docker build -f auth-service/Dockerfile -t auth-service .
+      - name: Stop integration test containers
+        if: always()
+        run: docker compose down
 
       - name: Login to GitHub Container Registry
         # Only login when the workflow is running on the main branch

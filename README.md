@@ -1,18 +1,19 @@
 # Patient Management System
 
-A microservice-based Patient Management System built with **Spring Boot** and **Java 21**. The project demonstrates modern backend development using REST APIs, gRPC, Apache Kafka, Spring Cloud Gateway, JWT authentication, Docker, and GitHub Actions.
+A microservice-based Patient Management System built with **Spring Boot** and **Java 21**. The project demonstrates modern backend development using REST APIs, gRPC, Apache Kafka, Spring Cloud Gateway, JWT authentication, Docker, GitHub Actions, and integration testing with REST Assured.
 
 ---
 
 ## Technology Stack
 
 | Category             | Technologies                               |
-| -------------------- | ------------------------------------------ |
+| -------------------- |--------------------------------------------|
 | **Backend**          | Java 21, Spring Boot, Spring Data JPA      |
 | **API Gateway**      | Spring Cloud Gateway                       |
 | **Security**         | Spring Security, JWT, BCrypt               |
 | **Communication**    | REST, gRPC, Apache Kafka, Protocol Buffers |
 | **Database**         | PostgreSQL, H2 (Testing)                   |
+| **Testing**          | JUnit, REST Assured (Integration Testing)  |
 | **Documentation**    | Swagger / OpenAPI 3                        |
 | **Build Tool**       | Maven                                      |
 | **Containerization** | Docker, Docker Compose                     |

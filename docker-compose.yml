@@ -20,6 +20,7 @@ services:
       start_period: 10s # Allow 10 seconds for PostgreSQL to start
 
   patient-service:
+    image: patient-service:latest
     build:  # Build Docker image from Dockerfile
       context: .  # Use project root as Docker build context
       dockerfile: patient-service/Dockerfile
@@ -46,6 +47,7 @@ services:
     restart: unless-stopped
 
   billing-service:
+    image: billing-service:latest
     build:
       context: .
       dockerfile: billing-service/Dockerfile
@@ -116,6 +118,7 @@ services:
     restart: unless-stopped
 
   analytics-service:
+    image: analytics-service:latest
     build:
       context: .
       dockerfile: analytics-service/Dockerfile
@@ -130,17 +133,20 @@ services:
     restart: unless-stopped
 
   api-gateway:
-      build:
-        context: .
-        dockerfile: api-gateway/Dockerfile
-      container_name: api-gateway
-      ports:
-        - "4004:4004"
-      environment:
-        AUTH_SERVICE_URL: http://auth-service:4005
-      networks:
-        - patient-network
-      restart: unless-stopped
+    image: api-gateway:latest
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "4004:4004"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:4005
+    depends_on:
+      - auth-service
+    networks:
+      - patient-network
+    restart: unless-stopped
 
   auth-service-db:
     image: postgres:15
@@ -163,6 +169,7 @@ services:
       start_period: 10s
 
   auth-service:
+    image: auth-service:latest
     build:
       context: .
       dockerfile: auth-service/Dockerfile
