@@ -50,17 +50,19 @@ jobs:
       - name: Build Docker images
         run: docker compose build
 
+      - name: Prepare Kafka volume
+        # Fix CI build: Set Kafka volume ownership as fresh Actions volume not writable by Kafka's appuser.
+        # CI error: java.nio.file.AccessDeniedException: /tmp/kraft-combined-logs/bootstrap.checkpoint.tmp
+        run: |
+          docker volume create patient-management-system_kafka_data
+          docker run --rm \
+            -v patient-management-system_kafka_data:/data \
+            busybox chown -R 1000:1000 /data
+
       - name: Start services for integration tests
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: docker compose up -d --wait
-
-      - name: Show Docker logs on failure
-        if: failure()
-        run: |
-          docker compose ps
-          docker compose logs kafka
-          docker inspect kafka --format='{{json .State.Health}}'
 
       - name: Run integration tests
         run: mvn -B test -f integration-tests/pom.xml
