@@ -20,7 +20,6 @@ A microservice-based Patient Management System built with **Spring Boot** and **
 | **CI/CD**            | GitHub Actions                             |
 
 ---
-
 ## Quick Start
 
 ### Prerequisites
@@ -28,21 +27,34 @@ A microservice-based Patient Management System built with **Spring Boot** and **
 * Docker Desktop
 * Git
 
-### Configure environment variables
-
-Create a `.env` file in the project root and provide a Base64-encoded secret used for signing JWTs:
-
-```env
-JWT_SECRET=your_base64_encoded_secret
-```
-
-The `.env` file is excluded from Git so secrets are not committed to the repository.
-
-### Run the application
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/anishshinde01/patient-management-system.git
 cd patient-management-system
+```
+
+### 2. Configure environment variables
+
+Run the setup script from the project root:
+
+```bash
+./scripts/setup-env.sh
+```
+
+This creates a local `.env` file with a generated Base64-encoded secret used for signing JWTs.
+
+ Alternatively, you can create the `.env` file manually in the project root:
+
+ ```env
+ JWT_SECRET=your_base64_encoded_secret
+ ```
+
+The `.env` file is excluded from Git so secrets are not committed to the repository.
+
+### 3. Run the application
+
+```bash
 docker compose up --build -d
 ```
 
