@@ -35,3 +35,6 @@ build/
 
 # Local environment variables/secrets used by the application; to keep them out of GitHub.
 .env
+
+# Generated AWS CDK synthesis output
+cdk.out/

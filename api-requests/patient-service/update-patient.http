@@ -1,6 +1,7 @@
 ### update existing patient entity
 PUT http://localhost:4004/api/patients/5cde276f-f666-45b2-bfd0-05ff9b9ee22a
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Test Update",

@@ -43,3 +43,12 @@ spring:
                 - Path=/api-docs/auth
               filters:
                 - RewritePath=/api-docs/auth,/v3/api-docs
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Patient Service
+        url: /api-docs/patients
+      - name: Auth Service
+        url: /api-docs/auth

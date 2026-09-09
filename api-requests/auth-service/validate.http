@@ -1,5 +1,9 @@
 ### !! Run the login request first so the returned token is saved as {{token}}. !!
 ### GET request to validate token
-GET http://localhost:4004/auth/validate
 # Send the saved token in the Authorization header.
+# Keep the Authorization header directly below the request line so IntelliJ sends it as a header, not as the request body.
+#GET http://localhost:4004/auth/validate
+#Authorization: Bearer {{token}}
+GET http://lb-8c2e578d.elb.localhost.localstack.cloud:4004/auth/validate
 Authorization: Bearer {{token}}
+

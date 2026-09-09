@@ -47,6 +47,13 @@ jobs:
       - name: Build auth-service with Maven
         run: mvn -B clean package -f auth-service/pom.xml -DskipTests
 
+      - name: Validate AWS CDK infrastructure
+        working-directory: infrastructure
+        run: |
+          mvn compile
+          mvn exec:java -Dexec.mainClass="com.anishshinde.stack.LocalStack"
+          test -f cdk.out/localstack.template.json
+
       - name: Build Docker images
         run: docker compose build
 
